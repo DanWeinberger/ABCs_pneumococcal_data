@@ -1,0 +1,33 @@
+---
+title: "ABCs data import"
+author: "Dan Weinberger"
+date: '2022-09-05'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+```
+```{r}
+#a1 <- read.csv('https://data.cdc.gov/api/views/en3s-hzsr/rows.csv?accessType=DOWNLOAD')
+
+#saveRDS(a1,'./Data/ABCs_data_summary_2022_09_04.rds')
+
+a1 <-readRDS('./Data/ABCs_data_summary_2022_09_04.rds')
+```
+
+```{r}
+a2 <- a1 %>%
+  filter(Topic =='Death Rates' & ViewBy=='Age' & Year>=1998)
+
+p1 <- ggplot(a2, aes(x=Year, y=Value, group=ViewBy2 ,col=ViewBy2)) +
+  geom_line() +
+  theme_classic()
+
+ggplotly(p1)
+```
+
+
