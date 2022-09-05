@@ -19,6 +19,8 @@ library(plotly)
 a1 <-readRDS('./Data/ABCs_data_summary_2022_09_04.rds')
 ```
 
+Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019
+
 ```{r}
 a2 <- a1 %>%
   filter(Topic =='Death Rates' & ViewBy=='Age' & Year>=1998)
