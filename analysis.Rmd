@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
 library(plotly)
+#install.packages("waffle", repos = "https://cinc.rud.is") 
+library(waffle)
 ```
 ```{r}
 #a1 <- read.csv('https://data.cdc.gov/api/views/en3s-hzsr/rows.csv?accessType=DOWNLOAD')
@@ -19,7 +21,7 @@ library(plotly)
 a1 <-readRDS('./Data/ABCs_data_summary_2022_09_04.rds')
 ```
 
-Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019
+Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019. In 2019 there were 810 deaths nationally recorded as J13 (pneumococcal pneumonia) or A40.3 (pneumococcal septicemia) or G00.1 (pneumococcal meningitis) from CDC WONDER (B95.3 was not on WONDER)
 
 ```{r}
 a2 <- a1 %>%
@@ -30,6 +32,20 @@ p1 <- ggplot(a2, aes(x=Year, y=Value, group=ViewBy2 ,col=ViewBy2)) +
   theme_classic()
 
 ggplotly(p1)
+```
+
+```{r}
+b2019 <- read.csv('./Data/jiac058_suppl_supplementary_table_s2.csv') %>%
+  group_by(State, sero, LT5) %>%
+  summarize(N_cases=n()) %>%
+  mutate(sero=as.factor(sero))
+```
+
+```{r}
+  p1 <- ggplot(b2019[b2019$LT5=='neg',], aes(fill = sero, values = N_cases)) +
+    geom_waffle(color='white', size = 0.25) +
+  facet_wrap(~State)
+p1
 ```
 
 
