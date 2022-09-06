@@ -21,7 +21,10 @@ library(waffle)
 a1 <-readRDS('./Data/ABCs_data_summary_2022_09_04.rds')
 ```
 
-Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019. In 2019 there were 810 deaths nationally recorded as J13 (pneumococcal pneumonia) or A40.3 (pneumococcal septicemia) or G00.1 (pneumococcal meningitis) from CDC WONDER (B95.3 was not on WONDER)
+Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019. In 2019 there were 810 deaths nationally recorded as J13 (pneumococcal pneumonia) or A40.3 (pneumococcal septicemia) or G00.1 (pneumococcal meningitis) from CDC WONDER (B95.3 was not on WONDER). With the line list data we get 923 with J13, A40.3, G00.1, B95.3. There were 537 Streptococcal sepsis (A40.8/A40.9)
+
+
+ABCS genomic data are in: https://www.ncbi.nlm.nih.gov/bioproject/284954
 
 ```{r}
 a2 <- a1 %>%
