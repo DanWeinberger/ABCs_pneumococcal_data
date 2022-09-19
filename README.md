@@ -4,6 +4,8 @@ Collection of publicly available data from the CDC's active bacterial Core Surve
 This includes sequenced isolates, which are not 100% of the cases. Note that catchment populations change over time so trends cannot be 
 inferred without accurate denominators.
 
+Also includes data from the ECDC surveillance atlas
+
 
 References:
 
