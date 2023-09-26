@@ -4,6 +4,8 @@ Collection of publicly available data from the CDC's active bacterial Core Surve
 This includes sequenced isolates, which are not 100% of the cases. Note that catchment populations change over time so trends cannot be 
 inferred without accurate denominators.
 
+Serotype data through 2020 now available at https://data.cdc.gov/Public-Health-Surveillance/2016-2020-Serotype-Data-for-Invasive-Pneumococcal-/qvzb-qs6p
+
 Also includes data from the [ECDC surveillance atlas](https://atlas.ecdc.europa.eu/public/index.aspx?Dataset=27&HealthTopic=40)
 
 
