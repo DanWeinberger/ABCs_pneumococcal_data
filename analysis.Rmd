@@ -137,22 +137,44 @@ st1 <- read.csv('C:/Users/DMW63/Desktop/R_Projects/ABCs_pneumococcal_data/Data/2
 ```
 
 ```{r}
-st1 %>%
-  filter(Age.Group..years.=='65+' & Year>=2016 & IPD.Serotype !='MISS') %>%
-  group_by(Age.Group..years.,IPD.Serotype) %>%
-  summarize(N_IPD=sum(Frequency.Count)) %>%
+ecdc2 <- process_ecdc2() %>%
+  filter( country != 'EU/EEA' & total_cases >100 & !(st %in% c('11','11F','19','36','39','43','7','17','Other')))
+
+uk_data <- ecdc2 %>%
+  filter(country=='United Kingdom'  & year %in% c(2011,2019) & st !='MISS') %>%
+  group_by(agegrp,st,year) %>%
+  summarize(N_IPD=sum(N_cases)) %>%
+  ungroup() %>%
+  group_by(agegrp,year) %>%
   arrange(-N_IPD) %>%
   mutate(stN=row_number(),
-        pcv20 = if_else(IPD.Serotype %in% c('1', '3', '4', '5', '6A', '6B', '7F', '8', '9V', '10A', '11A', '12F', '14', '15B', '18C', '19A', '19F', '22F', '23F','33F'),'PCV20','Other')) %>%
-  ungroup()%>%
-  ggplot(aes(x=stN, y=N_IPD, color=pcv20)) +
+        pcv20 = if_else(st %in% c('1', '3', '4', '5', '6A', '6B', '7F', '8', '9V', '10A', '11A', '12F', '14', '15B', '18C', '19A', '19F', '22F', '23F','33F'),'PCV20','Other')) %>%
+  ungroup()
+
+```
+
+```{r, fig.width=5, fig.height=3}
+ p1 <- uk_data %>% 
+   filter(agegrp==1 & year==2011) %>%
+   ggplot(aes(x=stN, y=N_IPD, color=pcv20)) +
   #geom_line() +
-  geom_point()+
+  geom_text(aes(label=st), size=2, angle=45)+
   theme_minimal()+
   ylab('Number of isolates')+
   xlab('Serotype order')+
-  ggtitle('IPD cases among adults 65+ years of age in the US, 2017-2021')
+  ggtitle('IPD, children <5 in the UK, 2011')
+p1
 
+ p2 <- uk_data %>% 
+   filter(agegrp==1 & year==2019) %>%
+   ggplot(aes(x=stN, y=N_IPD, color=pcv20)) +
+  #geom_line() +
+  geom_text(aes(label=st), size=2, angle=45)+
+  theme_minimal()+
+  ylab('Number of isolates')+
+  xlab('Serotype order')+
+  ggtitle('IPD, children <5 in the UK, 2019')
+p2
 
 ```
 

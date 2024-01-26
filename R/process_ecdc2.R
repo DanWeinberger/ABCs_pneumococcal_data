@@ -1,4 +1,4 @@
-process_ecdc2 <- function() {
+process_ecdc <- function() {
 #Define ST categories
 NOVAX= 'NOVAX';
 pcv7stmac=c('4', '14' ,'18C', '19F', '6B' ,'6A/C' ,'6A', '9V', '23F')
@@ -26,7 +26,7 @@ eu2 <- bind_rows(eu2a, eu2b, eu2c) %>%
 #combine by age group
 eu3 <- merge(eu1, eu2, by=c('Population', 'Time','RegionCode')) %>%
   rename(year=Time, st=Category, country=RegionName) %>%
-  filter( country %in% c("EU/EEA","United Kingdom",'France','Spain','Italy','Belgium','Denmark','Finland' ,'Austria','Netherlands','Norway','Sweden')) %>%
+  filter(year>=2017 & country %in% c("EU/EEA","United Kingdom",'France','Spain','Italy','Belgium','Denmark','Finland' ,'Austria','Netherlands','Norway','Sweden')) %>%
   mutate(percent=as.numeric(percent),
          N_st= Total_cases*percent/100, 
          period=5,
@@ -34,10 +34,10 @@ eu3 <- merge(eu1, eu2, by=c('Population', 'Time','RegionCode')) %>%
          PCV7st = if_else(st %in% pcv7stmac,1,0),
          PCV13st = if_else(st %in% pcv13stmac,1,0),
          PCV15st = if_else(st %in% pcv15stmac,1,0)) %>%
-  group_by(country,agegrp, st, year) %>%
+  group_by(country,agegrp, st, period) %>%
   summarize(N_cases=sum(N_st, na.rm = T)) %>%
   ungroup() %>%
-  group_by( country, agegrp,year) %>%
+  group_by( country, agegrp,period) %>%
   mutate(pct= N_cases/sum(N_cases), total_cases=sum(N_cases)) %>%
   ungroup() 
   
