@@ -105,7 +105,30 @@ pheatmap(
   labels_row=df_wide$st
 )
 
+
+```
+
+pre-PCV13 heatmap only
+```{r, fig.width=5, fig.height=10}
+df_wide <- s2 %>%
+  filter(year<=2009) %>%
+  dplyr::select(year, st, logRR) %>%
+  tidyr::pivot_wider(names_from = year, values_from = logRR)
+
+pheatmap(
+  df_wide[,-1],
+  color = viridis(100),
+  cluster_rows = TRUE,
+  cluster_cols = F,
+  scale = "none",
+  border_color = NA,
+  labels_row=df_wide$st
+)
+```
+
 ##post PV13 only
+
+```{r, fig.width=5, fig.height=10}
 s2_13<- s1 %>%
     group_by(st, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>% #sum across age group
