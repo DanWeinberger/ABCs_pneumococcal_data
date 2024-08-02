@@ -17,6 +17,16 @@ source('./R/process_ecdc.R')
 ```
 
 
+
+##ABCs serotype specific IPD data by age!
+```{r}
+# s1 <- read.csv('https://data.cdc.gov/api/views/qvzb-qs6p/rows.csv?accessType=DOWNLOAD')
+# saveRDS(s1,'./Data/ABCs_st_1998_2021.rds') 
+
+s1 <- readRDS('./Data/ABCs_st_1998_2021.rds')
+```
+
+
 ```{r}
 #a1 <- read.csv('https://data.cdc.gov/api/views/en3s-hzsr/rows.csv?accessType=DOWNLOAD')
 
