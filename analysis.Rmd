@@ -30,12 +30,11 @@ s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
   rename(agec = "Age.Group..years.",
          year=Year,
          st=IPD.Serotype,
-         N_IPD = Frequency.Count)
-
-
-s1 %>%
-  group_by(st) %>%
-  summarize(N=sum(N_IPD))
+         N_IPD = Frequency.Count) %>%
+  mutate( st= if_else(st=='16','16F', st)) %>%
+  group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>%
+  ungroup()
 
 
 p1 <- s1 %>%
@@ -153,6 +152,18 @@ pheatmap(
   border_color = NA,
   labels_row=df_wide13$st
 )
+```
+ST4 trends
+```{r}
+s1 %>%
+  filter(st %in% c('4','6B','9V','14','18C','19F','23F')) %>%
+  ggplot(aes(x=year, y=log(N_IPD)))+
+  geom_line()+
+  facet_wrap(~st, scales ='free') +
+  theme_classic()+
+  geom_vline(xintercept=c(1999.5, 2009.5), lty=2, color='gray')+
+  ggtitle('Trends in PCV7 serotypes')
+
 ```
 
 
