@@ -267,6 +267,8 @@ ggplotly(p3)
 ecdc <- process_ecdc() %>%
   filter(agegrp==5 & country != 'EU/EEA' & total_cases >100 & !(st %in% c('11','11F','19','36','39','43','7','17','Other')))
 
+
+
 ecdc.c <-  dcast(ecdc  ,country ~ st, value.var='pct') %>%
   replace(is.na(.), 0)
 
@@ -309,6 +311,8 @@ st1 <- read.csv('C:/Users/DMW63/Desktop/R_Projects/ABCs_pneumococcal_data/Data/2
 ecdc2 <- process_ecdc2() %>%
   filter( country != 'EU/EEA' & total_cases >100 & !(st %in% c('11','11F','19','36','39','43','7','17','Other')))
 
+write.csv(ecdc2, './Data/ecdc_processed.csv')
+
 uk_data <- ecdc2 %>%
   filter(country=='United Kingdom'  & year %in% c(2011,2019) & st !='MISS') %>%
   group_by(agegrp,st,year) %>%
@@ -345,5 +349,24 @@ p1
   ggtitle('IPD, children <5 in the UK, 2019')
 p2
 
+```
+
+Australia
+```{r}
+a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive.xlsx', skip=1) 
+
+a2 <- a1 %>%
+  rename(agec= 'Age group', st=Serotype, year=Year, indig='Indigenous status') %>%
+  group_by( indig,st, year) %>%
+  summarize(N_ipd=n())
+
+st4 <- a2 %>% filter(st=='4')
+
+a2 %>%
+  filter(st %in% c('4','19F','19A','7F','6B')) %>%
+ggplot( aes(x=year, y=N_ipd)) +
+  geom_line()+
+  facet_wrap(indig~st, scales='free_y', nrow=3)+
+  ylim(0, NA)
 ```
 
