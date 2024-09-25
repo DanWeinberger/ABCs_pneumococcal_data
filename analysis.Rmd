@@ -352,21 +352,66 @@ p2
 ```
 
 Australia
+"In mid-2018, the Australian childhood 13-valent pneumococcal conjugate vaccine schedule changed from 3+0 to 2+1, moving the third dose to 12 months of age,"
 ```{r}
-a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive.xlsx', skip=1) 
+a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive.xlsx', skip=1)  %>%
+  rename(agec= 'Age group', st=Serotype, year=Year, indig='Indigenous status', dx='Clinical category') %>%
+      mutate( agec2 = if_else( agec %in% c('< 2 yo') ,0,
+                        if_else( agec %in% c( '02-04') ,1,
+                       if_else( agec %in% c('05-09', '10-14') ,2,        
+                        if_else( agec %in% c('20-24', '25-29','30-34',"35-39") ,3,        
+                        if_else( agec %in% c('40-44', '45-49','50-54',"55-59","60-64") ,4,        
+                        if_else( agec %in% c('65-69', '70-74','75-79',"80-84","85+") ,5,999        
+                               ))))))
+      )
+      
 
-a2 <- a1 %>%
-  rename(agec= 'Age group', st=Serotype, year=Year, indig='Indigenous status') %>%
+ a1 %>%
   group_by( indig,st, year) %>%
-  summarize(N_ipd=n())
-
-st4 <- a2 %>% filter(st=='4')
-
-a2 %>%
+  summarize(N_ipd=n()) %>%
   filter(st %in% c('4','19F','19A','7F','6B')) %>%
 ggplot( aes(x=year, y=N_ipd)) +
   geom_line()+
   facet_wrap(indig~st, scales='free_y', nrow=3)+
   ylim(0, NA)
+ 
+  a1 %>%
+  group_by( Sex,st, year) %>%
+  summarize(N_ipd=n()) %>%
+  filter(st %in% c('4','19F','19A','7F','6B') & Sex %in% c('Female','Male')) %>%
+ggplot( aes(x=year, y=N_ipd)) +
+  geom_line()+
+  facet_wrap(Sex~st, scales='free_y', nrow=2)+
+  ylim(0, NA)
+  
+  
+    a1 %>%
+  group_by( agec2,st, year) %>%
+  summarize(N_ipd=n()) %>%
+      ungroup() %>%
+      group_by(agec2, st) %>%
+      mutate(IPD_scaled=N_ipd/max(N_ipd)) %>%
+  filter(st %in% c('4','19F','19A','7F','6B') & agec2 <=5 ) %>%
+ggplot( aes(x=year, y=IPD_scaled)) +
+  geom_line()+
+  facet_grid(agec2~st, scales='free_y')+
+  ylim(0, NA)
+    
+    
+ st19F_kids <-    a1 %>%
+        filter(agec2==1 & st=='19F')
+ 
+ 
+ vax_cov <- a1 %>%
+   filter(agec=="< 2 yo") %>%
+   rename(pcv7="Prevenar (7vPCV)" ,pcv10="Synflorix (10vPCV)", pcv13="Prevenar 13 (13vPCV)") %>%
+   group_by(year) %>%
+   mutate(pcv7 =as.numeric(pcv7),
+          pcv13=as.numeric(pcv13),
+          pcv10=as.numeric(pcv10),
+          pcv7_receipt=(pcv7>0),
+          pcv13_receipt=(pcv13>0),
+          pcv10_receipt=(pcv10>0))%>%
+   summarize(pcv7=mean(pcv7_receipt, na.rm=T), pcv13=mean(pcv13_receipt, na.rm=T), pcv10=mean(pcv10_receipt, na.rm=T))
 ```
 
