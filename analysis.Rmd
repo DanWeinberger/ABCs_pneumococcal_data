@@ -106,6 +106,11 @@ pheatmap(
 
 
 ```
+```{r}
+prop1 <- s1 %>%
+  group_by(year) %>%
+  mutate(prop_IPD=N_IPD/sum(N_IPD))
+```
 
 pre-PCV13 heatmap only
 ```{r, fig.width=5, fig.height=10}
