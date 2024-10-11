@@ -220,6 +220,34 @@ s1 %>%
 a1 <-readRDS('./Data/ABCs_data_summary_2024_01_01.rds')
 ```
 
+infer population size
+```{r}
+
+b1 <- a1 %>% 
+  filter(ViewBy=='Age' & ViewBy2!='Overall' & Topic=='Case Rates') %>%
+  mutate(ViewBy2=gsub('years old','', ViewBy2),
+         ViewBy2=gsub('year old','', ViewBy2),
+         agec = if_else(ViewBy2 %in% c('<1 ','1 '),'<2',
+                if_else(ViewBy2 %in% c('5-17 '),'5-17', 
+                if_else(ViewBy2 %in% c('18-34 ','35-49 '),'18-49',
+                if_else(ViewBy2 %in% c('50-64 '),'50-64',  
+                if_else(ViewBy2 %in% c('>=65 '),'65+', ViewBy2 
+                        )
+         ))))
+         )
+
+N_age <- s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
+  rename(agec = "Age.Group..years.",
+         year=Year,
+         st=IPD.Serotype,
+         N_IPD = Frequency.Count) %>%
+  group_by(agec, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>%
+  mutate(agec=gsub('Age ', '', agec)) %>%
+  ungroup()
+```
+
+
 Based on ABCs Bact-Facts, projected 3250 IPD deaths nationally in 2019. In 2019 there were 810 deaths nationally recorded as J13 (pneumococcal pneumonia) or A40.3 (pneumococcal septicemia) or G00.1 (pneumococcal meningitis) from CDC WONDER (B95.3 was not on WONDER). With the line list data we get 923 with J13, A40.3, G00.1, B95.3. There were 537 Streptococcal sepsis (A40.8/A40.9)
 
 
@@ -256,9 +284,10 @@ b2019 <- read.csv('./Data/ABCs/jiac058_suppl_supplementary_table_s2.csv') %>%
   mutate(pct = N_cases/sum(N_cases)) %>%
   ungroup()
   
-ggplotly(ggplot(b2019[b2019$LT5=='neg',], aes(fill=State, y=pct, x=sero)) + 
+  b2019 %>% filter(sero=='19F') %>%
+    ggplot( aes(fill=State, y=pct, x=sero)) + 
     geom_bar(position="dodge", stat="identity") 
-) 
+ 
 ```
 correlations
 ```{r}
