@@ -284,9 +284,11 @@ b2019 <- read.csv('./Data/ABCs/jiac058_suppl_supplementary_table_s2.csv') %>%
   mutate(pct = N_cases/sum(N_cases)) %>%
   ungroup()
   
-  b2019 %>% filter(sero=='19F') %>%
+  b2019 %>% 
+    filter(sero=='19F' &LT5=='neg' ) %>%
     ggplot( aes(fill=State, y=pct, x=sero)) + 
-    geom_bar(position="dodge", stat="identity") 
+    geom_bar(position="dodge", stat="identity") +
+    theme_minimal()
  
 ```
 correlations
