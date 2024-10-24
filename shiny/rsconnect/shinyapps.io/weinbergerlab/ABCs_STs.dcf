@@ -1,0 +1,12 @@
+name: ABCs_STs
+title: ABCs_STs
+username: weinbergerlab
+account: weinbergerlab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13115733
+bundleId: 9262263
+url: https://weinbergerlab.shinyapps.io/ABCs_STs/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
