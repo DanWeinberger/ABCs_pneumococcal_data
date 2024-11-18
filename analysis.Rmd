@@ -158,6 +158,7 @@ pheatmap(
   labels_row=df_wide13$st
 )
 ```
+
 ST4 trends
 ```{r}
 s1 %>%
@@ -190,7 +191,7 @@ s1 %>%
   ggtitle('Trends in PCV7 serotypes')
 ```
 
-```{r, fig.width=6, fig.height=2}
+```{r, fig.width=6, fig.height=4}
  readRDS('./Data/ABCs_st_1998_2021.rds') %>%
   rename(agec = "Age.Group..years.",
          year=Year,
@@ -207,10 +208,10 @@ s1 %>%
   group_by(st,agec2, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup()%>%
-   filter(st %in% c('19F')) %>%
+   filter(st %in% c('19A','19F')) %>%
   ggplot(aes(x=year, y=N_IPD))+
   geom_line()+
-  facet_wrap(~agec2, scales ='free', nrow=1) +
+  facet_wrap(st~agec2, scales ='free', nrow=2) +
   theme_classic()+
   theme(axis.text.x = element_text(angle = 45, vjust = 1.0, hjust=1)) +
   geom_vline(xintercept=c(1999.5, 2009.5), lty=2, color='gray')+
@@ -303,6 +304,24 @@ b2019 <- read.csv('./Data/ABCs/jiac058_suppl_supplementary_table_s2.csv') %>%
     geom_bar(position="dodge", stat="identity") +
       facet_wrap(~LT5)+
     theme_minimal()
+    
+      b2019 %>% 
+    filter(sero=='19A' ) %>%
+    ggplot( aes(fill=State, y=pct, x=sero)) + 
+    geom_bar(position="dodge", stat="identity") +
+      facet_wrap(~LT5)+
+    theme_minimal()
+      
+       b2019 %>% 
+    filter( LT5=='neg' & (sero=='19A' |sero=='19F')) %>%
+         reshape2::dcast(.,State~sero, value.var='pct') %>%
+         rename(st19a='19A',
+                st19f='19F') %>%
+         ggplot(aes(x=st19a, y=st19f, label=State))+
+         geom_point(color='white')+
+         theme_classic()+
+         geom_text()
+         
  
 ```
 correlations
@@ -464,10 +483,25 @@ ggplot( aes(x=year, y=N_ipd)) +
       ungroup() %>%
       group_by(agec2, st) %>%
       mutate(IPD_scaled=N_ipd/max(N_ipd)) %>%
-  filter(st %in% c('4','19F','19A','7F','6B') & agec2 <=5 ) %>%
+  filter(st %in% c('4','19F','19A','7F','6B') & !is.na(agec2) ) %>%
 ggplot( aes(x=year, y=IPD_scaled)) +
   geom_line()+
   facet_grid(agec2~st, scales='free_y')+
+  ylim(0, NA)+
+   theme_classic()
+    
+
+    
+        a1 %>%
+  group_by( agec2,st, year) %>%
+  summarize(N_ipd=n()) %>%
+      ungroup() %>%
+      group_by(agec2, st) %>%
+      mutate(IPD_scaled=N_ipd/max(N_ipd)) %>%
+  filter(st %in% c('19F','19A') & !is.na(agec2) ) %>%
+ggplot( aes(x=year, y=IPD_scaled)) +
+  geom_line()+
+  facet_grid(st~agec2, scales='free_y')+
   ylim(0, NA)+
    theme_classic()
     
