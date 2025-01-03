@@ -189,6 +189,16 @@ coverage_50plus <- tab1 %>%
              peumosil_N = sum(flag_pneumosil*N_IPD/tot_IPD))
 round(coverage_50plus*100,1)
   
+
+st_freq <- read.csv('https://data.cdc.gov/api/views/qvzb-qs6p/rows.csv?accessType=DOWNLOAD') %>%
+  rename(agec = "Age.Group..years.",
+         year=Year,
+         st=IPD.Serotype,
+         N_IPD = Frequency.Count) %>%
+    #filter(agec %in% c('Age 50-64', 'Age 65+')) %>%
+ group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD))
+  
 ```
 
 ```{r}
@@ -531,6 +541,8 @@ p2
 
 Australia
 "In mid-2018, the Australian childhood 13-valent pneumococcal conjugate vaccine schedule changed from 3+0 to 2+1, moving the third dose to 12 months of age,"
+
+https://www.health.gov.au/resources/publications/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive?language=en
 ```{r}
 a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive.xlsx', skip=1)  %>%
   rename(agec= 'Age group', st=Serotype, year=Year, indig='Indigenous status', dx='Clinical category') %>%
