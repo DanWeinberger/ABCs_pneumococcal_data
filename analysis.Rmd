@@ -16,6 +16,7 @@ library(pheatmap)
 #install.packages("waffle", repos = "https://cinc.rud.is") 
 library(waffle)
 library(reshape2)
+library(gridExtra)
 source('./R/process_ecdc.R')
 ```
 
@@ -107,6 +108,157 @@ pheatmap(
 
 
 ```
+
+filter more rare serotypes
+```{r, fig.width=5, fig.height=10}
+pcv7 <- c('4','6B','9V','14','18C','19F','23F')
+
+pcv10gsk <- c(pcv7,'1','5','7F')
+
+pcv13 <- c(pcv7, '1','3','5','6A','7F','19A')
+
+# s1 <- read.csv('https://data.cdc.gov/api/views/qvzb-qs6p/rows.csv?accessType=DOWNLOAD')
+# saveRDS(s1,'./Data/ABCs_st_1998_2021.rds') 
+
+s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
+  rename(agec = "Age.Group..years.",
+         year=Year,
+         st=IPD.Serotype,
+         N_IPD = Frequency.Count) %>%
+  mutate( st= if_else(st=='16','16F', st)) %>%
+  group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>%
+  ungroup() %>%
+  group_by(st) %>%
+  mutate(cum_N= sum(N_IPD)) %>%
+  filter(cum_N>100) %>%
+  ungroup() %>%
+  mutate(pcv13st = if_else(st %in% pcv13,'VT','NVT'))
+
+
+
+s2_pre<- s1 %>%
+  filter(year %in% c(1998, 1999)) %>%
+  group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>%
+  ungroup() %>%
+    group_by(st) %>%
+  summarize(N_IPD_pre=mean(N_IPD)) %>%
+  ungroup() %>%
+    tidyr::complete(st,  fill=list(N_IPD_pre=0))  #fills 0
+
+s2_pre13<- s1 %>%
+  filter(year %in% c(2008, 2009)) %>%
+  group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>%
+  ungroup() %>%
+    group_by(st) %>%
+  summarize(N_IPD_pre=mean(N_IPD)) %>%
+  ungroup() %>%
+    tidyr::complete(st,  fill=list(N_IPD_pre=0))  #fills 0
+
+s2<- s1 %>%
+    group_by(st, year) %>%
+  summarize(N_IPD=sum(N_IPD)) %>% #sum across age group
+  ungroup() %>%
+    tidyr::complete(st, year, fill=list(N_IPD=0))%>%  #fills 0
+  left_join(s2_pre, by='st') %>%
+  mutate(N_IPD_pre = if_else(is.na(N_IPD_pre),0, N_IPD_pre) ,
+    logRR = log((N_IPD+1)/(N_IPD_pre+1) )) 
+
+max_RR <- s2 %>%
+  group_by(st) %>%
+  summarize(max_RR = max(logRR)) %>%
+  arrange((max_RR))
+
+s2$st <- factor(s2$st, levels = max_RR$st)
+
+df_wide <- s2 %>%
+  dplyr::select(year, st, logRR) %>%
+  tidyr::pivot_wider(names_from = year, values_from = logRR)
+
+p1 <- pheatmap(
+  df_wide[,-1],
+  color = viridis(100),
+  cluster_rows = TRUE,
+  cluster_cols = F,
+  scale = "none",
+  border_color = NA,
+  labels_row=df_wide$st
+) 
+p1
+
+
+df_vt <- df_wide %>%
+  mutate(pcv13st = if_else(st %in% pcv13,'VT','NVT')) %>%
+  filter(pcv13st =='VT') %>%
+    dplyr::select(-pcv13st) 
+
+  p1 <-  pheatmap(
+  df_vt[,-1] ,
+  color = viridis(100),
+  cluster_rows = TRUE,
+  cluster_cols = F,
+  scale = "none",
+  border_color = NA,
+  labels_row=df_vt$st,
+  legend_breaks=c(-6,-4,-2,0,2,4),
+  breaks=seq(from=-6, to=3.2, length.out=100)
+) 
+
+df_nvt <- df_wide %>%
+  mutate(pcv13st = if_else(st %in% pcv13,'VT','NVT')) %>%
+  filter(pcv13st =='NVT') %>%
+    dplyr::select(-pcv13st) 
+
+ p2 <-    pheatmap(
+  df_nvt[,-1] ,
+  color = viridis(100),
+  cluster_rows = TRUE,
+  cluster_cols = F,
+  scale = "none",
+  border_color = NA,
+  labels_row=df_nvt$st,
+  legend_breaks=c(-6,-4,-2,0,2,4),
+  breaks=seq(from=-6, to=3.2, length.out=100)
+) 
+
+
+ rr_nvt <- s2 %>%
+     mutate(pcv13st = if_else(st %in% pcv13,'VT','NVT')) %>%
+     filter(pcv13st =='NVT') %>%
+ ggplot( aes(x = factor(year), y = st, fill = logRR)) +
+  geom_tile() +
+     scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  labs(x = "Year", y =
+         "serotype", fill = "log RR") +
+  theme_minimal()+
+       theme(axis.text.x=element_text(angle=45, hjust=1))
+
+ 
+  rr_vt <- s2 %>%
+     mutate(pcv13st = if_else(st %in% pcv13,'VT','NVT')) %>%
+     filter(pcv13st =='VT') %>%
+ ggplot( aes(x = factor(year), y = st, fill = logRR)) +
+  geom_tile() +
+#     guides(fill="none")+
+
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  labs(x = "Year", y =
+         "serotype", fill = "log RR") +
+  theme_minimal()+
+    theme(axis.text.x=element_text(angle=45, hjust=1))
+```
+
+
+
+```{r, fig.width=12, fig.height=4}
+grid.arrange(grobs=list(p1[[4]], p2[[4]]), nrow = 1, top='US IPD 1998-2022')    
+
+grid.arrange(grobs=list(rr_vt, rr_nvt), nrow = 1, top='Change in US IPD 1998-2022')    
+
+```
+
 ## tabulate coverage of different PCVs
 ```{r}
 
