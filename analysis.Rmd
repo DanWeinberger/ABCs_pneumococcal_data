@@ -640,6 +640,36 @@ round(a1$sdev^2 / sum(a1$sdev^2)*100)
 ```
 
 
+##Compare ABCs IPD data with SSUAD pneumonia data
+Ramirez et al OFID 2025 https://academic.oup.com/ofid/article/12/1/ofae727/7926903
+
+```{r}
+  ipd1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
+  rename(agec = "Age.Group..years.",
+         year=Year,
+         st=IPD.Serotype,
+         N_IPD = Frequency.Count) %>%
+  mutate( st= if_else(st=='16','16F', st),
+          st = if_else(st %in% c('15B','15C'), '15BC',st),
+          if_else(st %in% c('6A','6C'), '6AC',st)
+                       ) %>%
+  filter(year %in% c(2019,2020) & agec %in% c('Age 50-64','Age 65+')) %>%
+  group_by(st) %>%
+  summarize( N_IPD= sum(N_IPD))
+
+uad <- readxl::read_excel('./Data/SSUAD/ramirez_ofid_2025_ofae727.xlsx') %>%
+  mutate(N_SSUAD= over65 + a50_64_with_indication + a50_64_no_indication ) %>%
+  full_join(ipd1, by='st')
+
+ggplot(uad, aes(x=N_IPD, y=N_SSUAD, label=st)) +
+  geom_point()+
+  geom_text( vjust = 1)+
+  theme_classic() +
+  ggtitle('IPD vs pneumonia 50+ years in US')
+
+```
+
+
 ## US ABCs serotype data 2016-21
 https://data.cdc.gov/Public-Health-Surveillance/2016-2021-Serotype-Data-for-Invasive-Pneumococcal-/qvzb-qs6p/data_preview
 ```{r}
