@@ -4,7 +4,7 @@ Collection of publicly available data from the CDC's active bacterial Core Surve
 This includes sequenced isolates, which are not 100% of the cases. Note that catchment populations change over time so trends cannot be 
 inferred without accurate denominators.
 
-Serotype data from 1998-2021, stratified by age available from: https://data.cdc.gov/api/views/qvzb-qs6p/
+Serotype data from 1998-2023, stratified by age available from: https://data.cdc.gov/api/views/qvzb-qs6p/
 
 Also includes data from the [ECDC surveillance atlas](https://atlas.ecdc.europa.eu/public/index.aspx?Dataset=27&HealthTopic=40)
 
