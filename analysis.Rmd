@@ -26,9 +26,9 @@ source('./R/process_ecdc.R')
 
 ```{r, fig.width=5, fig.height=10}
 # s1 <- read.csv('https://data.cdc.gov/api/views/qvzb-qs6p/rows.csv?accessType=DOWNLOAD')
-# saveRDS(s1,'./Data/ABCs_st_1998_2021.rds') 
+# saveRDS(s1,'./Data/ABCs_st_1998_2023.rds') 
 
-s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
+s1 <- readRDS('./Data/ABCs_st_1998_2023.rds') %>%
   rename(agec = "Age.Group..years.",
          year=Year,
          st=IPD.Serotype,
@@ -120,7 +120,7 @@ pcv13 <- c(pcv7, '1','3','5','6A','7F','19A')
 # s1 <- read.csv('https://data.cdc.gov/api/views/qvzb-qs6p/rows.csv?accessType=DOWNLOAD')
 # saveRDS(s1,'./Data/ABCs_st_1998_2021.rds') 
 
-s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
+s1 <- readRDS('./Data/ABCs_st_1998_2023.rds') %>%
   rename(agec = "Age.Group..years.",
          year=Year,
          st=IPD.Serotype,
