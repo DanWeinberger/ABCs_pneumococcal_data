@@ -5,7 +5,7 @@ account: weinbergerlab
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13115727
-bundleId: 9262228
+bundleId: 10040842
 url: https://weinbergerlab.shinyapps.io/ABCs_Serotypes/
 version: 1
 asMultiple: FALSE

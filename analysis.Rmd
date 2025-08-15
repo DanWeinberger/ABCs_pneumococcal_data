@@ -735,7 +735,8 @@ a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveill
                         if_else( agec %in% c('40-44', '45-49','50-54',"55-59","60-64") ,4,        
                         if_else( agec %in% c('65-69', '70-74','75-79',"80-84","85+") ,5,999        
                                )))))),
-              agec2 =factor(agec2,levels=c(0,1,2,3,4,5,999),c('<2y', '2-4y', '5-14y','20-39y','40-64y','65+y','NA'))
+              agec2 =factor(agec2,levels=c(0,1,2,3,4,5,999),c('<2y', '2-4y', '5-14y','20-39y','40-64y','65+y','NA')),
+              year= as.numeric(year)
       )
       
 
@@ -811,12 +812,42 @@ ggplot( aes(x=year, y=IPD_scaled)) +
   group_by( agec2,st, year) %>%
   summarize(N_ipd=n()) %>%
       ungroup() %>%
-      group_by(agec2, indig,st) %>%
-      mutate(IPD_scaled=N_ipd/max(N_ipd)) %>%
+    group_by(st, agec2) %>%
+      mutate(IPD_scaled=N_ipd/max(N_ipd, na.rm=T)) %>%
   filter(st %in% c('19F') & agec2 !='NA' ) %>%
 ggplot( aes(x=year, y=IPD_scaled)) +
   geom_line()+
-  facet_grid(~agec2, scales='free_y')+
+  facet_grid(~agec2)+
+  ylim(0, NA)+
+   theme_classic()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    
+```
+```{r, fig.width=5, fig.height=2}
+        a1 %>%
+  group_by( State,st, year) %>%
+  summarize(N_ipd=n()) %>%
+      ungroup() %>%
+    group_by(st, State) %>%
+      mutate(IPD_scaled=N_ipd/max(N_ipd, na.rm=T)) %>%
+  filter(st %in% c('19F') & State !='NA' ) %>%
+ggplot( aes(x=year, y=IPD_scaled)) +
+  geom_line()+
+  facet_grid(~State)+
+  ylim(0, NA)+
+   theme_classic()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+        a1 %>%
+  group_by( State,st, year) %>%
+  summarize(N_ipd=n()) %>%
+      ungroup() %>%
+    group_by(st, State) %>%
+      mutate(IPD_scaled=N_ipd/max(N_ipd, na.rm=T)) %>%
+  filter(st %in% c('4') & State !='NA' ) %>%
+ggplot( aes(x=year, y=IPD_scaled)) +
+  geom_line()+
+  facet_grid(~State)+
   ylim(0, NA)+
    theme_classic()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
