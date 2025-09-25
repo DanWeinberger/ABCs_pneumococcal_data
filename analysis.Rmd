@@ -736,9 +736,15 @@ a1 <- readxl::read_excel('./Data/Australia/national-notifiable-diseases-surveill
                         if_else( agec %in% c('65-69', '70-74','75-79',"80-84","85+") ,5,999        
                                )))))),
               agec2 =factor(agec2,levels=c(0,1,2,3,4,5,999),c('<2y', '2-4y', '5-14y','20-39y','40-64y','65+y','NA')),
-              year= as.numeric(year)
+              year= as.numeric(year),
+              
+      pneumonia = 1*grepl('Pneumonia',dx),
+      meningitis = 1*grepl('Meningitis',dx),
+      
+      
       )
       
+
 
  a1 %>%
   group_by( indig,st, year) %>%
@@ -806,6 +812,26 @@ ggplot( aes(x=year, y=IPD_scaled)) +
           pcv10_receipt=(pcv10>0))%>%
    summarize(pcv7=mean(pcv7_receipt, na.rm=T), pcv13=mean(pcv13_receipt, na.rm=T), pcv10=mean(pcv10_receipt, na.rm=T))
 ```
+
+```{r}
+vax <- a1 %>%
+  filter(`Vaccination history` %in% c('No vaccine given', 'Vaccine/s given')) %>%
+ # group_by(year,agec2 ,st,`Vaccination history`) %>%
+  mutate(st19F = if_else(st=='19F',1,0))
+
+
+vax_adult = vax %>% 
+  filter(agec2 %in% c('65+y','40-64y')) %>%
+  rename ( pcv13 ="Prevenar 13 (13vPCV)"  ,
+           ppsv23 = "Pneumovax 23 (23vPPV)" )
+
+mod1 <- glm(st19F ~as.factor(year) + indig +  agec2 +pneumonia + meningitis +pcv13 +ppsv23   , data=vax_adult, family='binomial')
+
+summary(mod1)
+
+
+```
+
 
 ```{r, fig.width=5, fig.height=2}
         a1 %>%
