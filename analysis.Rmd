@@ -683,6 +683,14 @@ ecdc2 <- process_ecdc2() %>%
 
 write.csv(ecdc2, './Data/ecdc_processed.csv')
 
+ecdc2 %>% 
+  filter(st=='19F' & agegrp==5) %>%
+  ggplot()+ 
+  geom_line(aes(x=year, y=pct, group=country, color=country)) +
+  ylim(0,6) +
+  theme_classic()+
+  facet_wrap(~country)
+
 uk_data <- ecdc2 %>%
   filter(country=='United Kingdom'  & year %in% c(2011,2019) & st !='MISS') %>%
   group_by(agegrp,st,year) %>%

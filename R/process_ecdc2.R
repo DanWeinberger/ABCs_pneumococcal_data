@@ -35,10 +35,11 @@ eu3 <- merge(eu1, eu2, by=c('Population', 'Time','RegionCode')) %>%
          PCV13st = if_else(st %in% pcv13stmac,1,0),
          PCV15st = if_else(st %in% pcv15stmac,1,0)) %>%
   group_by(country,agegrp, st, period) %>%
-  summarize(N_cases=sum(N_st, na.rm = T)) %>%
+  rename(pct=percent) %>%
+  summarize(N_cases=sum(N_st, na.rm = T) ,pct=mean(pct, na.rm=T)) %>%
   ungroup() %>%
   group_by( country, agegrp,period) %>%
-  mutate(pct= N_cases/sum(N_cases), total_cases=sum(N_cases)) %>%
+  mutate(pct2= N_cases/sum(N_cases), total_cases=sum(N_cases)) %>%
   ungroup() 
   
 

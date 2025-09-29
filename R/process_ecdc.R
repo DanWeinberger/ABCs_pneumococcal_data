@@ -38,7 +38,7 @@ eu3 <- merge(eu1, eu2, by=c('Population', 'Time','RegionCode')) %>%
   summarize(N_cases=sum(N_st, na.rm = T)) %>%
   ungroup() %>%
   group_by( country, agegrp,year) %>%
-  mutate(pct= N_cases/sum(N_cases), total_cases=sum(N_cases)) %>%
+  mutate(pct= 100*N_cases/sum(N_cases), total_cases=sum(N_cases)) %>%
   ungroup() 
   
 
