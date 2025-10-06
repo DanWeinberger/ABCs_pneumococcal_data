@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Serotype Patterns in the US, Europe, and Australia"
 format: html
 editor: visual
 ---
@@ -67,7 +67,7 @@ vax_years <- read_csv("Data/vax-intro-years.csv") |>
 
 
 ```{r}
-select_countries <- c('Australia','Austria','Czechia','Denmark','Finland','Ireland','Italy','Netherlands','Norway','Poland','Slovenia','Slovakia','United Kingdom')
+select_countries <- c('Australia','Austria','Czechia','Denmark','Finland','Ireland','Italy','Netherlands','Norway','Poland','Slovenia','Slovakia','United Kingdom', 'United States')
 
 vax_years2 <- vax_years %>% 
   filter( country  %in% select_countries
@@ -76,7 +76,7 @@ vax_years2 <- vax_years %>%
 
 #filter to countries with at least 100 cases in 2019
 st_db |> 
-  filter( st =='19F' & country  %in% select_countries
+  filter( st =='19A' & country  %in% select_countries
           ) |>
   mutate(country=factor(country)) |>
   ggplot(aes(x = year, y = prop_st)) +
