@@ -1,0 +1,94 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+```{r setup}
+library(tidyverse)
+source('./R/process_ecdc3.R')
+
+```
+
+```{r}
+library(tidyverse)
+us_raw <- read_rds("data/ABCs_st_1998_2023.rds")
+
+us <- us_raw |> 
+  rename(agec = "Age.Group..years.",
+         year = Year,
+         st = IPD.Serotype,
+         N_IPD = Frequency.Count)  |> 
+  mutate(st = if_else(st == '16', '16F', st))  |> 
+  group_by(st, year) |> 
+  summarize(N_IPD = sum(N_IPD)) |> 
+  group_by(year) |> 
+  mutate(IPD_total = sum(N_IPD)) |> 
+  ungroup() |> 
+ # filter(st == "19F") |> 
+  rename(IPD_st = N_IPD) |> 
+  mutate(country = "United States",
+         prop_st = IPD_st/IPD_total) |> 
+  dplyr::select(country, st, year, IPD_st, IPD_total, prop_st)
+
+aus_raw <- readxl::read_xlsx("Data/Australia/national-notifiable-diseases-surveillance-system-nndss-public-dataset-pneumococcal-disease-invasive.xlsx", skip = 1)
+
+aus <- aus_raw |> 
+  rename(year = Year,
+         st = Serotype)  |> 
+  group_by(year, st) |> 
+  summarise(N_IPD = n()) |> 
+  group_by(year) |> 
+  mutate(IPD_total = sum(N_IPD)) |> 
+  ungroup() |> 
+  rename(IPD_st = N_IPD) |> 
+  mutate(country = "Australia",
+         prop_st = IPD_st/IPD_total,
+         year = as.numeric(year)
+         ) |> 
+  dplyr::select(country, st, year, IPD_st, IPD_total, prop_st)
+
+eur_raw <- process_ecdc3()
+
+eur <- eur_raw |> 
+  mutate(prop_st = percent/100,
+         year= as.numeric(year),
+         IPD_total = as.numeric(IPD_total)
+)
+
+st_db <- bind_rows(us ,aus,eur) %>%
+  mutate(year = as.numeric(year))
+
+vax_years <- read_csv("Data/vax-intro-years.csv") |> 
+  mutate(label = factor(label, levels = c("PCV7", "PCV10", "PCV13"))) %>%
+  filter(country!='Germany' & country != 'United States')
+
+```
+
+
+```{r}
+select_countries <- c('Australia','Austria','Czechia','Denmark','Finland','Ireland','Italy','Netherlands','Norway','Poland','Slovenia','Slovakia','United Kingdom')
+
+vax_years2 <- vax_years %>% 
+  filter( country  %in% select_countries
+          )
+
+
+#filter to countries with at least 100 cases in 2019
+st_db |> 
+  filter( st =='19F' & country  %in% select_countries
+          ) |>
+  mutate(country=factor(country)) |>
+  ggplot(aes(x = year, y = prop_st)) +
+  geom_vline(data = vax_years2, aes(xintercept = year, color = label), lty = 2) +
+  scale_color_manual(values = c("PCV7" = "black", "PCV10" = "blue", "PCV13" = "red"), name = "") +
+  ggnewscale::new_scale_color() +
+  geom_line(aes(color = country), lwd = 1, show.legend = FALSE) +
+  scale_x_continuous(breaks = c(2000, 2005, 2010, 2015, 2020, 2025)) +
+  facet_wrap(~country) +
+  labs(x = "", y = "Serotype IPD cases/total IPD cases", color = "") +
+  theme_bw() +
+  theme(text = element_text(size = 16))+
+  ylim(0, NA)
+```
+
