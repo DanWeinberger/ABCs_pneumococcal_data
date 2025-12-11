@@ -34,14 +34,15 @@ s1 <- readRDS('./Data/ABCs_st_1998_2023.rds') %>%
          st=IPD.Serotype,
          N_IPD = Frequency.Count) %>%
   mutate( st= if_else(st=='16','16F', st)) %>%
-  group_by(st, year) %>%
+  group_by(st,Site, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup()
 
 
 p1 <- s1 %>%
-    group_by(st, year) %>%
+    group_by(st,Site, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
+  filter(Site=='All_Sites') %>%
   ggplot(aes(x=year, y=log(N_IPD+0.5), group=st, color=st)) +
   geom_line()+
   theme_minimal()
@@ -49,6 +50,7 @@ ggplotly(p1)
 
 s2_pre<- s1 %>%
   filter(year %in% c(1998, 1999)) %>%
+    filter(Site=='All_Sites') %>%
   group_by(st, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup() %>%
@@ -59,6 +61,7 @@ s2_pre<- s1 %>%
 
 s2_pre13<- s1 %>%
   filter(year %in% c(2008, 2009)) %>%
+    filter(Site=='All_Sites') %>%
   group_by(st, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup() %>%
@@ -69,6 +72,7 @@ s2_pre13<- s1 %>%
 
 s2<- s1 %>%
     group_by(st, year) %>%
+    filter(Site=='All_Sites') %>%
   summarize(N_IPD=sum(N_IPD)) %>% #sum across age group
   ungroup() %>%
     tidyr::complete(st, year, fill=list(N_IPD=0))%>%  #fills 0
@@ -126,10 +130,10 @@ s1 <- readRDS('./Data/ABCs_st_1998_2023.rds') %>%
          st=IPD.Serotype,
          N_IPD = Frequency.Count) %>%
   mutate( st= if_else(st=='16','16F', st)) %>%
-  group_by(st, year) %>%
+  group_by(st,Site, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup() %>%
-  group_by(st) %>%
+  group_by(st, Site) %>%
   mutate(cum_N= sum(N_IPD)) %>%
   filter(cum_N>100) %>%
   ungroup() %>%
@@ -139,16 +143,18 @@ s1 <- readRDS('./Data/ABCs_st_1998_2023.rds') %>%
 
 s2_pre<- s1 %>%
   filter(year %in% c(1998, 1999)) %>%
-  group_by(st, year) %>%
+    filter(Site=='All_Sites') %>%
+  group_by(st,Site, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup() %>%
-    group_by(st) %>%
+    group_by(st, Site) %>%
   summarize(N_IPD_pre=mean(N_IPD)) %>%
   ungroup() %>%
-    tidyr::complete(st,  fill=list(N_IPD_pre=0))  #fills 0
+    tidyr::complete(st,Site,  fill=list(N_IPD_pre=0))  #fills 0
 
 s2_pre13<- s1 %>%
   filter(year %in% c(2008, 2009)) %>%
+    filter(Site=='All_Sites') %>%
   group_by(st, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   ungroup() %>%
@@ -158,6 +164,7 @@ s2_pre13<- s1 %>%
     tidyr::complete(st,  fill=list(N_IPD_pre=0))  #fills 0
 
 s2<- s1 %>%
+    filter(Site=='All_Sites') %>%
     group_by(st, year) %>%
   summarize(N_IPD=sum(N_IPD)) %>% #sum across age group
   ungroup() %>%
@@ -500,6 +507,22 @@ N_age <- s1 <- readRDS('./Data/ABCs_st_1998_2021.rds') %>%
   summarize(N_IPD=sum(N_IPD)) %>%
   mutate(agec=gsub('Age ', '', agec)) %>%
   ungroup()
+```
+
+
+# 19F trends by site
+```{r}
+trends19f <- s1 %>%
+  group_by(Site, year) %>%
+  mutate(pct = 100*N_IPD/sum(N_IPD, na.rm=T)) %>%
+  filter(st=='19F')
+
+  
+p1 <- ggplot(trends19f)+
+  geom_line(aes(x=year, y=pct, group=Site, color=Site))+
+  theme_classic()
+  
+plotly::ggplotly(p1)
 ```
 
 
