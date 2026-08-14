@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:/Users/DMW63/AppData/Local/R/win-library/4.4\" -Directory | Where-Object { $_.Name -match '^\\(rlang|gridExtra|vctrs|cli|glue|lifecycle|ggplot2|dplyr|tibble|pillar\\)$' } | Select-Object Name, LastWriteTime)",
+      "PowerShell(\\(Get-Command Rscript -ErrorAction SilentlyContinue\\).Source; Get-ChildItem \"C:/Program Files/R\" -Directory -ErrorAction SilentlyContinue | Select-Object Name)",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"install.packages\\(c\\('rlang','gridExtra'\\), lib='C:/Users/DMW63/AppData/Local/R/win-library/4.4', repos='https://cloud.r-project.org', INSTALL_opts='--no-lock'\\)\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"install.packages\\(c\\('rlang','gridExtra'\\), lib='C:/Users/DMW63/AppData/Local/R/win-library/4.4', repos='https://cloud.r-project.org', type='binary'\\)\")",
+      "Read(//c/rtools44/usr/bin/**)",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"pkgs <- c\\('dplyr','ggplot2','viridis','plotly','scales','pheatmap','waffle','reshape2','gridExtra'\\); for \\(p in pkgs\\) { r <- tryCatch\\({suppressPackageStartupMessages\\(library\\(p, character.only=TRUE\\)\\); 'OK'}, error=function\\(e\\) paste\\('FAIL:', conditionMessage\\(e\\)\\)\\); cat\\(sprintf\\('%-10s %s %s\\\\n', p, as.character\\(tryCatch\\(packageVersion\\(p\\), error=function\\(e\\) '-'\\)\\), r\\)\\) }\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"ap <- available.packages\\(repos='https://cloud.r-project.org', type='binary'\\); if \\('waffle' %in% rownames\\(ap\\)\\) cat\\('CRAN binary waffle:', ap['waffle','Version'], '\\\\n'\\) else cat\\('waffle NOT on CRAN binary\\\\n'\\); ap2 <- tryCatch\\(available.packages\\(repos='https://cinc.rud.is'\\), error=function\\(e\\) NULL\\); if \\(!is.null\\(ap2\\) && 'waffle' %in% rownames\\(ap2\\)\\) cat\\('cinc.rud.is waffle:', ap2['waffle','Version'], '\\\\n'\\)\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"install.packages\\('waffle', lib='C:/Users/DMW63/AppData/Local/R/win-library/4.4', repos=c\\('https://hrbrmstr.r-universe.dev','https://cloud.r-project.org'\\)\\)\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"ap <- tryCatch\\(available.packages\\(repos='https://hrbrmstr.r-universe.dev'\\), error=function\\(e\\) NULL\\); if\\(!is.null\\(ap\\) && 'waffle' %in% rownames\\(ap\\)\\) print\\(ap['waffle', c\\('Version','Repository','NeedsCompilation','Imports'\\)]\\) else cat\\('not in source index\\\\n'\\)\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"cat\\('remotes:', requireNamespace\\('remotes', quietly=TRUE\\), '\\\\n'\\); cat\\('pak:', requireNamespace\\('pak', quietly=TRUE\\), '\\\\n'\\)\")",
+      "PowerShell(& \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"install.packages\\('remotes', lib='C:/Users/DMW63/AppData/Local/R/win-library/4.4', repos='https://cloud.r-project.org', type='binary'\\); cat\\('remotes now:', requireNamespace\\('remotes', quietly=TRUE\\), '\\\\n'\\)\")",
+      "PowerShell($env:R_LIBS_USER=\"C:/Users/DMW63/AppData/Local/R/win-library/4.4\"; & \"C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe\" -e \"options\\(repos='https://cloud.r-project.org'\\); remotes::install_github\\('hrbrmstr/waffle', lib='C:/Users/DMW63/AppData/Local/R/win-library/4.4', upgrade='never', build=TRUE, INSTALL_opts='--no-lock'\\)\")"
+    ]
+  }
+}

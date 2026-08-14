@@ -17,8 +17,8 @@ eu1 <- bind_rows(eu1a, eu1b,eu1c) %>%
   rename(percent=Value)
 
 eu2a <- read.csv('./Data/ECDC/ECDC_N_country_year_u1y.csv')
-eu2b <- read.csv('./Data/ECDC/ECDC_N_country_year_1-4y.csv')
-eu2c <- read.csv('./Data/ECDC/ECDC_N_country_year_65plus.csv')
+eu2b <- read.csv('./Data/ECDC/ECDC_N_country_year_1-4y.csv') %>% mutate(NumValue = as.numeric(NumValue))
+eu2c <- read.csv('./Data/ECDC/ECDC_N_country_year_65plus.csv') %>% mutate(NumValue = as.numeric(NumValue))
 eu2 <- bind_rows(eu2a, eu2b, eu2c) %>%
   select(Population, Time, RegionCode,NumValue) %>%
   rename(Total_cases = NumValue)

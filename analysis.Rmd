@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#install.packages(c("dplyr", "ggplot2", "viridis", "plotly", "scales", "pheatmap", "waffle", "reshape2", "gridExtra"), repos = c("https://cinc.rud.is", "https://cloud.r-project.org"))
 library(dplyr)
 library(ggplot2)
 library(viridis)
@@ -18,6 +19,8 @@ library(waffle)
 library(reshape2)
 library(gridExtra)
 source('./R/process_ecdc.R')
+source('./R/process_ecdc2.R')
+
 ```
 
 
