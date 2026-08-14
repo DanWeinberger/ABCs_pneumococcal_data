@@ -35,6 +35,7 @@ eu2c <- read.csv('./Data/ECDC/ECDC_N_country_year_65plus.csv') %>%
     mutate(NumValue = as.numeric(NumValue))
 
 eu2 <- bind_rows(eu2a, eu2b, eu2c) %>%
+  filter(Indicator == 'Reported cases') %>%
   select(Population, Time, RegionCode,NumValue) %>%
   rename(Total_cases = NumValue)
 
