@@ -23,9 +23,17 @@ eu1 <- bind_rows(eu1a, eu1b,eu1c) %>%
   filter(Distribution=="Distribution by serotype") %>%
   rename(percent=Value)
 
-eu2a <- read.csv('./Data/ECDC/ECDC_N_country_year_u1y.csv')
-eu2b <- read.csv('./Data/ECDC/ECDC_N_country_year_1-4y.csv') %>% mutate(NumValue = as.numeric(NumValue))
-eu2c <- read.csv('./Data/ECDC/ECDC_N_country_year_65plus.csv') %>% mutate(NumValue = as.numeric(NumValue))
+eu2a <- read.csv('./Data/ECDC/ECDC_N_country_year_u1y.csv') %>%
+  filter(Population=="Confirmed cases, age below 1" ) 
+
+eu2b <- read.csv('./Data/ECDC/ECDC_N_country_year_1-4y.csv') %>% 
+  filter(Population=="Confirmed cases, age 1-4" ) %>%
+  mutate(NumValue = as.numeric(NumValue))
+
+eu2c <- read.csv('./Data/ECDC/ECDC_N_country_year_65plus.csv') %>% 
+   filter(Population=="Confirmed cases, age 65 and above" ) %>%
+    mutate(NumValue = as.numeric(NumValue))
+
 eu2 <- bind_rows(eu2a, eu2b, eu2c) %>%
   select(Population, Time, RegionCode,NumValue) %>%
   rename(Total_cases = NumValue)
