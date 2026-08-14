@@ -5,13 +5,20 @@ pcv7stmac=c('4', '14' ,'18C', '19F', '6B' ,'6A/C' ,'6A', '9V', '23F')
 pcv13stmac=c(pcv7stmac, '1' ,'3' ,'5', '7F' ,'19A','6C')
 pcv15stmac=c(pcv13stmac, '22F' ,'33F')
 
-##EU
+##EU--with thsi export, all come from same file
 eu1a <- read.csv('./Data/ECDC/ECDC_surveillance_data_Invasive_pneumococcal_disease u12m.csv') %>%
+  filter(Population=="Confirmed cases, age below 1" ) %>%
   mutate(agegrp=1) 
-eu1b <- read.csv('./Data/ECDC/ECDC_surveillance_data_Invasive_pneumococcal_disease 1_4y.csv')%>%
+
+eu1b <- read.csv('./Data/ECDC/ECDC_surveillance_data_Invasive_pneumococcal_disease u12m.csv')%>%
+  filter(Population=="Confirmed cases, age 1-4" ) %>%
   mutate(agegrp=1)
-eu1c <- read.csv('./Data/ECDC/ECDC_surveillance_data_Invasive_pneumococcal_disease age65plus.csv')%>%
+
+
+eu1c <- read.csv('./Data/ECDC/ECDC_surveillance_data_Invasive_pneumococcal_disease u12m.csv')%>%
+   filter(Population=="Confirmed cases, age 65 and above" ) %>%
   mutate(agegrp=5)
+
 eu1 <- bind_rows(eu1a, eu1b,eu1c) %>%
   filter(Distribution=="Distribution by serotype") %>%
   rename(percent=Value)
